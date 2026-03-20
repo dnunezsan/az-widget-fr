@@ -1,3 +1,6 @@
+# Empaquetados de marketplace azure dashboards
+*.vsix
+
 # Logs
 logs
 *.log
