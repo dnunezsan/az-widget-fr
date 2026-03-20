@@ -4,6 +4,8 @@
 
 Este proyecto es una extensión para dashboards de Azure DevOps. Sigue estos pasos para configurar tu entorno y publicar actualizaciones.
 
+<img width="2040" height="635" alt="image" src="https://github.com/user-attachments/assets/ae53e0dd-cfb9-49e5-a27f-6dd4eca30ab0" />
+
 ## 🛠 1. Requisitos Previos
 
 Antes de empezar, asegúrate de tener instalado lo siguiente:
@@ -15,6 +17,7 @@ Antes de empezar, asegúrate de tener instalado lo siguiente:
     ```
 
 ---
+
 
 ## 📥 2. Configuración Inicial del Proyecto
 
