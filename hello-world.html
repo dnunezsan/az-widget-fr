@@ -8,24 +8,62 @@
                 usePlatformStyles: true
             });
 
-            VSS.require(["TFS/Dashboards/WidgetHelpers"], function (WidgetHelpers) {
-                WidgetHelpers.IncludeWidgetStyles();
-                VSS.register("HelloWorldWidget", function () {
-                    return {
+            VSS.require(["TFS/Dashboards/WidgetHelpers", "TFS/WorkItemTracking/RestClient"],
+                function (WidgetHelpers, WorkItemRestClient) {
+                    WidgetHelpers.IncludeWidgetStyles();
+
+                    var widgetImpl = {
                         load: function (widgetSettings) {
-                            var $title = $('h2.title');
-                            $title.text('Hello World');
-                            return WidgetHelpers.WidgetStatusHelper.Success();
+                            var context = VSS.getWebContext();
+                            var projectId = context.project.id;
+                            var client = WorkItemRestClient.getClient();
+
+                            var wiql = {
+                                query: "SELECT [System.Id], [System.Title], [System.State] " +
+                                    "FROM WorkItems " +
+                                    "WHERE [System.TeamProject] = '" + context.project.name + "' " +
+                                    "AND [System.WorkItemType] = 'Epic' " +
+                                    "ORDER BY [System.CreatedDate] DESC"
+                            };
+
+                            return client.queryByWiql(wiql, projectId).then(function(result) {
+                                var ids = result.workItems.map(function(wi) { return wi.id; });
+
+                                if (ids.length === 0) {
+                                    $(".title").text("No hay épicas en este proyecto");
+                                    return WidgetHelpers.WidgetStatusHelper.Success();
+                                }
+
+                                return client.getWorkItems(ids, ["System.Id", "System.Title", "System.State"])
+                                    .then(function(workItems) {
+                                        $(".title").text("Épicas del proyecto");
+                                        var list = $("<ul>");
+                                        workItems.forEach(function(wi) {
+                                            var item = $("<li>").text(
+                                                "#" + wi.id + " - " + wi.fields["System.Title"] +
+                                                " [" + wi.fields["System.State"] + "]"
+                                            );
+                                            list.append(item);
+                                        });
+                                        $(".content").append(list);
+                                        return WidgetHelpers.WidgetStatusHelper.Success();
+                                    });
+                            }).then(undefined, function(error) {
+                                return WidgetHelpers.WidgetStatusHelper.Failure(error.message);
+                            });
                         }
                     };
-                });
-                VSS.notifyLoadSucceeded();
+
+                    // ← Primero register, luego notify
+                    VSS.register("AccessEpicsWidget", widgetImpl);
+                    VSS.notifyLoadSucceeded();
             });
         </script>
     </head>
     <body>
         <div class="widget">
             <h2 class="title"></h2>
+            <div class="content"></div>
         </div>
     </body>
 </html>

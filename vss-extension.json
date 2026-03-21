@@ -1,9 +1,9 @@
 {
     "manifestVersion": 1,
-    "id": "azure-devops-extensions-myExtensions",
-    "version": "1.0.7",
-    "name": "My First Set of Widgets",
-    "description": "Samples containing different widgets extending dashboards",
+    "id": "azure-devops-extensions-accessEpics",
+    "version": "1.0.2",
+    "name": "AccessEpics",
+    "description": "This is an example for how the real query can work",
     "publisher": "DiegoNttdata",
     "categories": ["Azure Boards"],
     "targets": [
@@ -14,16 +14,19 @@
     "icons": {
         "default": "img/logo.png"
     },
+     "scopes": [
+        "vso.work"
+    ],
     "contributions": [
         {
-            "id": "HelloWorldWidget",
+            "id": "AccessEpicsWidget",
             "type": "ms.vss-dashboards-web.widget",
             "targets": [
                 "ms.vss-dashboards-web.widget-catalog"
             ],
             "properties": {
-                "name": "Hello World Widget",
-                "description": "My first widget",
+                "name": "Access Epics",
+                "description": "A widget to know how are the epics in a project",
                 "catalogIconUrl": "img/catalogIcon.png",
                 "previewImageUrl": "img/preview.png",
                 "uri": "hello-world.html",
