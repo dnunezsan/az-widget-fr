@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <script src="sdk/scripts/VSS.SDK.min.js"></script>
+        <script type="text/javascript">
+
+            console.log(">>> configuration.html cargado"); // ← agrega esto
+
+            VSS.init({
+                explicitNotifyLoaded: true,
+                usePlatformStyles: true,
+                usePlatformScripts: true
+            });
+
+            VSS.require(["TFS/Dashboards/WidgetHelpers"], function (WidgetHelpers) {
+
+                console.log(">>> VSS.require ejecutado"); // ← y esto
+
+                VSS.register("AccessEpicsWidget.configuration", {
+                    load: function (widgetSettings, widgetConfigurationContext) {
+
+                        console.log(">>> load ejecutado"); // ← y esto
+
+                        var settings = JSON.parse(widgetSettings.customSettings.data || "{}");
+                        var estadoSeleccionado = settings.estado || "Closed";
+                        $("#estado-select").val(estadoSeleccionado);
+
+                        $("#estado-select").on("change", function () {
+                            var customSettings = {
+                                data: JSON.stringify({ estado: $(this).val() })
+                            };
+                            widgetConfigurationContext.notify(
+                                WidgetHelpers.WidgetEvent.ConfigurationChange,
+                                WidgetHelpers.WidgetEvent.Args(customSettings)
+                            );
+                        });
+
+                        return WidgetHelpers.WidgetStatusHelper.Success();
+                    },
+                    onSave: function () {
+                        var customSettings = {
+                            data: JSON.stringify({ estado: $("#estado-select").val() })
+                        };
+                        return WidgetHelpers.WidgetConfigurationSave.Valid(customSettings);
+                    }
+                });
+
+                VSS.notifyLoadSucceeded();
+            });
+        </script>
+    </head>
+    <body>
+        <div class="widget-configuration">
+            <p>Selecciona el estado a medir como completado:</p>
+            <select id="estado-select">
+                <option value="Closed">Closed</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Active">Active</option>
+                <option value="New">New</option>
+            </select>
+        </div>
+    </body>
+</html>
