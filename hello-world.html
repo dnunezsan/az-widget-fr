@@ -4,26 +4,50 @@
         <meta charset="UTF-8">
         <script src="sdk/scripts/VSS.SDK.min.js"></script>
         <script src="scripts/widget.js"></script>
+        <style>
+            body, html {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                overflow: hidden !important;
+            }
+            .widget {
+                padding: 10px 15px !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+            h2.title {
+                font-size: 13px !important;
+                margin: 0 0 5px 0 !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+            #chart-container {
+                width: 100% !important;
+                height: calc(100% - 30px) !important;
+            }
+        </style>
         <script type="text/javascript">
             VSS.init({
                 explicitNotifyLoaded: true,
                 usePlatformStyles: true
             });
 
-            VSS.require(["TFS/Dashboards/WidgetHelpers", "TFS/WorkItemTracking/RestClient"],
-                function (WidgetHelpers, WorkItemRestClient) {
+            VSS.require(["TFS/Dashboards/WidgetHelpers", "TFS/WorkItemTracking/RestClient", "highcharts"],
+                function (WidgetHelpers, WorkItemRestClient, Highcharts) {
                     WidgetHelpers.IncludeWidgetStyles();
 
                     VSS.register("AccessEpicsWidget", {
                         load: function (widgetSettings) {
-                            // widgetSettings trae el estado guardado desde configuration.html
-                            return cargarWidget(widgetSettings, WidgetHelpers, WorkItemRestClient);
+                            return cargarWidget(widgetSettings, WidgetHelpers, WorkItemRestClient, Highcharts);
                         },
                         reload: function (widgetSettings) {
-                            // se dispara al guardar cambios en el menú de configuración
-                            $(".content").empty();
-                            $(".porcentaje").empty();
-                            return cargarWidget(widgetSettings, WidgetHelpers, WorkItemRestClient);
+                            $("#chart-container").empty();
+                            $(".title").empty();
+                            return cargarWidget(widgetSettings, WidgetHelpers, WorkItemRestClient, Highcharts);
                         }
                     });
 
@@ -35,8 +59,7 @@
     <body>
         <div class="widget">
             <h2 class="title"></h2>
-            <p class="porcentaje"></p>
-            <div class="content"></div>
+            <div id="chart-container"></div>
         </div>
     </body>
 </html>

@@ -1,8 +1,7 @@
-function cargarWidget(widgetSettings, WidgetHelpers, WorkItemRestClient) {
+function cargarWidget(widgetSettings, WidgetHelpers, WorkItemRestClient, Highcharts) {
 
-    // 1. Leer el estado que el usuario eligió en el menú
     var settings = JSON.parse(widgetSettings.customSettings.data || "{}");
-    var estadoObjetivo = settings.estado || "Closed";  // default si no hay config
+    var estadoObjetivo = settings.estado || "Closed";
 
     var context = VSS.getWebContext();
     var client = WorkItemRestClient.getClient();
@@ -25,31 +24,48 @@ function cargarWidget(widgetSettings, WidgetHelpers, WorkItemRestClient) {
 
         return client.getWorkItems(ids, ["System.Id", "System.Title", "System.State"])
             .then(function(workItems) {
-
-                // 2. Calcular porcentaje con el estado recibido
                 var total = workItems.length;
                 var completadas = workItems.filter(function(wi) {
                     return wi.fields["System.State"] === estadoObjetivo;
                 }).length;
+                var otros = total - completadas;
                 var porcentaje = Math.round((completadas / total) * 100);
 
-                // 3. Renderizar
-                $(".title").text("Épicas del proyecto");
-                $(".porcentaje").text(
-                    completadas + " de " + total + 
-                    " épicas en '" + estadoObjetivo + "' → " + porcentaje + "%"
-                );
+                // Título encima del gráfico
+                $(".title").text("Épicas del proyecto — " + porcentaje + "%  en " + estadoObjetivo);
 
-                // var list = $("<ul>");
-                // workItems.forEach(function(wi) {
-                //     list.append(
-                //         $("<li>").text(
-                //             "#" + wi.id + " - " + wi.fields["System.Title"] +
-                //             " [" + wi.fields["System.State"] + "]"
-                //         )
-                //     );
-                // });
-                // $(".content").append(list);
+                // Renderizar torta
+                Highcharts.chart("chart-container", {
+                    accessibility: { enabled: false },
+                    chart: {
+                        type: "pie",
+                        margin: [0, 0, 0, 0],
+                        backgroundColor: "transparent"
+                    },
+                    title: { text: null },
+                    tooltip: {
+                        pointFormat: "<b>{point.y} épicas ({point.percentage:.1f}%)</b>"
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: "pointer",
+                            dataLabels: {
+                                enabled: true,
+                                format: "<b>{point.name}</b>: {point.y}"
+                            }
+                        }
+                    },
+                    credits: { enabled: false },
+                    series: [{
+                        name: "Épicas",
+                        colorByPoint: true,
+                        data: [
+                            { name: estadoObjetivo, y: completadas, color: "#107C10" },
+                            { name: "Otros",        y: otros,       color: "#D83B01" }
+                        ]
+                    }]
+                });
 
                 return WidgetHelpers.WidgetStatusHelper.Success();
             });

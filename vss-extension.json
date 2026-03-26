@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "azure-devops-extensions-accessEpics",
-    "version": "1.1.8",
+    "version": "1.1.921",
     "name": "AccessEpics",
     "description": "This is an example for how the real query can work",
     "publisher": "DiegoNttdata",
@@ -17,7 +17,10 @@
         {
             "id": "AccessEpicsWidget",
             "type": "ms.vss-dashboards-web.widget",
-            "targets": ["ms.vss-dashboards-web.widget-catalog"],
+            "targets": [
+                "ms.vss-dashboards-web.widget-catalog",
+                ".AccessEpicsWidget.Configuration"
+            ],
             "properties": {
                 "name": "Access Epics",
                 "description": "A widget to know how are the epics in a project",
@@ -25,17 +28,20 @@
                 "previewImageUrl": "img/preview.png",
                 "uri": "hello-world.html",
                 "isNameConfigurable": true,
-                "supportedSizes": [{ "rowSpan": 1, "columnSpan": 2 }],
-                "supportedScopes": ["project_team"],
-                "configurationContributionId": "DiegoNttdata.azure-devops-extensions-accessEpics.AccessEpicsWidget.configuration"
+                "supportedSizes": [
+                    { "rowSpan": 1, "columnSpan": 2 },
+                    { "rowSpan": 2, "columnSpan": 2 },
+                    { "rowSpan": 2, "columnSpan": 3 }
+                ],
+                "supportedScopes": ["project_team"]
             }
         },
         {
-            "id": "AccessEpicsWidget.configuration",
+            "id": "AccessEpicsWidget.Configuration",
             "type": "ms.vss-dashboards-web.widget-configuration",
             "targets": ["ms.vss-dashboards-web.widget-configuration"],
             "properties": {
-                "name": "Configuración",
+                "name": "Access Epics Configuration",
                 "uri": "configuration.html"
             }
         }
