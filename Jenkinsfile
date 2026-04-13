@@ -1,15 +1,20 @@
 pipeline {
     agent any
     stages {
-        stage('Test Email Variable') {
+        stage('Debug Variables') {
             steps {
                 script {
-                    if (env.CHANGE_ID) { // Si es un PR
-                        echo "El ID del PR es: ${env.CHANGE_ID}"
-                        echo "El autor es: ${env.CHANGE_AUTHOR}"
-                        echo "El email del autor es: ${env.CHANGE_AUTHOR_EMAIL}"
+                    // Esto imprimirá todas las variables de entorno para que las veas en el log
+                    sh 'printenv | sort' 
+                    
+                    if (env.CHANGE_ID) {
+                        echo "--- DATOS DEL PULL REQUEST ---"
+                        echo "ID: ${env.CHANGE_ID}"
+                        echo "Autor: ${env.CHANGE_AUTHOR}"
+                        echo "Email: ${env.CHANGE_AUTHOR_EMAIL}"
                     } else {
-                        echo "Esto no es un Pull Request, es la rama ${env.BRANCH_NAME}"
+                        echo "ADVERTENCIA: No se detectó un ambiente de Pull Request."
+                        echo "Rama actual: ${env.BRANCH_NAME}"
                     }
                 }
             }
