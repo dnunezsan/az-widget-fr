@@ -1,39 +1,27 @@
 pipeline {
     agent any
+    
     stages {
-        stage('Debug Variables') {
+        stage('Procesar Cambio') {
             steps {
                 script {
-                    // Esto imprimirá todas las variables de entorno para que las veas en el log
-                    sh 'printenv | sort' 
-
+                    // Lógica robusta para obtener el email
+                    def targetEmail = env.CHANGE_AUTHOR_EMAIL
                     
-                    // Intentamos obtenerlo de la variable, si no, lo sacamos del autor del commit
-                    def prEmail = env.CHANGE_AUTHOR_EMAIL
-                    
-                    if (!prEmail || prEmail == 'null') {
-                        echo "La variable CHANGE_AUTHOR_EMAIL es nula, extrayendo de git log..."
-                        // %ae obtiene el email del autor del commit actual
-                        prEmail = sh(script: "git log -1 --pretty=format:'%ae'", returnStdout: true).trim()
+                    if (!targetEmail || targetEmail == 'null') {
+                        targetEmail = sh(script: "git log -1 --pretty=format:'%ae'", returnStdout: true).trim()
                     }
-                
-                    echo "--- FINAL DESTINATION ---"
-                    echo "Email a notificar: ${prEmail}"
 
-                    
-                    if (env.CHANGE_ID) {
-                        echo "--- DATOS DEL PULL REQUEST ---"
-                        echo "ID: ${env.CHANGE_ID}"
-                        echo "Autor: ${env.CHANGE_AUTHOR}"
-                        echo "Correo"
-                        echo "Email: ${env.CHANGE_AUTHOR_EMAIL}"
-                    } else {
-                        echo "ADVERTENCIA: No se detectó un ambiente de Pull Request."
-                        echo "Rama actual: ${env.BRANCH_NAME}"
-                    }
+                    echo "Notificando al autor: ${targetEmail}"
+
+                    // Aquí insertas tu lógica de envío de correo
+                    // emailext (
+                    //     to: "${targetEmail}",
+                    //     subject: "Build ${currentBuild.currentResult}: PR #${env.CHANGE_ID}",
+                    //     body: "Tu cambio ha sido procesado. Detalles en: ${env.BUILD_URL}"
+                    // )
                 }
             }
         }
     }
 }
-
