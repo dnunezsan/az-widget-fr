@@ -11,6 +11,7 @@ pipeline {
                         echo "--- DATOS DEL PULL REQUEST ---"
                         echo "ID: ${env.CHANGE_ID}"
                         echo "Autor: ${env.CHANGE_AUTHOR}"
+                        echo "Correo"
                         echo "Email: ${env.CHANGE_AUTHOR_EMAIL}"
                     } else {
                         echo "ADVERTENCIA: No se detectó un ambiente de Pull Request."
